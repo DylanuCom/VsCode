@@ -22,8 +22,23 @@ if "%choice%"=="3" exit
 :add
 cls
 echo Adding Visual Studio Code to Right Click Menu...
-REG ADD "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode" /v "Icon" /t REG_SZ /d "\"C:\Users\sherif\AppData\Local\Programs\Microsoft VS Code\Code.exe\"" /f
-REG ADD "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode\command" /ve /t REG_SZ /d "\"C:\Users\sherif\AppData\Local\Programs\Microsoft VS Code\Code.exe\" ." /f
+
+:: تحديد المسار باستخدام المتغيرات البيئية للوصول إلى Program Files أو أي مكان تثبيت VS Code
+set "vscode_path=%ProgramFiles%\Microsoft VS Code\Code.exe"
+if not exist "%vscode_path%" (
+    set "vscode_path=%LocalAppData%\Programs\Microsoft VS Code\Code.exe"
+)
+
+if not exist "%vscode_path%" (
+    echo Error: Visual Studio Code not found in default installation paths.
+    echo Please ensure Visual Studio Code is installed on this system.
+    pause
+    goto :menu
+)
+
+:: إضافة VSCode إلى قائمة الزر الأيمن
+REG ADD "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode" /v "Icon" /t REG_SZ /d "\"%vscode_path%\"" /f
+REG ADD "HKEY_CLASSES_ROOT\Directory\Background\shell\VSCode\command" /ve /t REG_SZ /d "\"%vscode_path%\" ." /f
 cls
 echo ====================================================
 echo Visual Studio Code has been added successfully!
